@@ -40,3 +40,10 @@ notification:
   verification:
     expire-minutes: 5 # 인증코드 유효시간 (분)
     cleanup-minutes: 30 # 만료 레코드 정리 주기 (분)
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n"
