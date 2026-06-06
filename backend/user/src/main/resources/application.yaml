@@ -1,0 +1,31 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: user
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/daramu
+    username: postgres
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+keycloak:
+  base-url: http://localhost:8180
+  realm: daramu
+  admin:
+    client-id: user-service
+    client-secret: ${KEYCLOAK_CLIENT_SECRET}
+
+notification:
+  base-url: http://localhost:8082
+
