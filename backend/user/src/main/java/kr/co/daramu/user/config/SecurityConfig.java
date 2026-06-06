@@ -19,7 +19,13 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        // 회원가입 인증 패스
+                        .requestMatchers("/api/users/register").permitAll()
+                        // 그 외 모든 요청은 JWT 필요
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> {})  // application.yaml의 issuer-uri 기반
                 );
 
         return http.build();

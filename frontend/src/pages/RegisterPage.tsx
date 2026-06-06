@@ -34,6 +34,7 @@ export default function RegisterPage() {
   const [code, setCode] = useState("");
   const [verifyToken, setVerifyToken] = useState<string | null>(null);
   const [codeError, setCodeError] = useState<string | null>(null);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const inputStyle: React.CSSProperties = {
     width: "100%",
@@ -57,6 +58,27 @@ export default function RegisterPage() {
     fieldErrors[key] ? (
       <p style={{ color: "#f87171", fontSize: "0.75rem", marginTop: "4px" }}>
         {fieldErrors[key]}
+      </p>
+    ) : null;
+
+  /** 실시간 유효성 검사 */
+  const validate = (): Record<string, string> => {
+    const errs: Record<string, string> = {};
+    if (form.username.length < 3 || form.username.length > 50)
+      errs.username = "아이디는 3~50자 사이여야 합니다";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      errs.email = "올바른 이메일 형식이 아닙니다";
+    if (form.password.length < 8)
+      errs.password = "비밀번호는 최소 8자 이상이어야 합니다";
+    return errs;
+  };
+  const validationErrors = validate();
+  const isFormValid = Object.keys(validationErrors).length === 0;
+  const touch = (key: string) => setTouched((p) => ({ ...p, [key]: true }));
+  const inlineErr = (key: string) =>
+    touched[key] && validationErrors[key] ? (
+      <p style={{ color: "#f87171", fontSize: "0.75rem", marginTop: "4px" }}>
+        {validationErrors[key]}
       </p>
     ) : null;
 
@@ -203,10 +225,11 @@ export default function RegisterPage() {
                   onChange={(e) =>
                     setForm((p) => ({ ...p, username: e.target.value }))
                   }
-                  placeholder="아이디를 입력하세요"
-                  required
+                  onBlur={() => touch("username")}
+                  placeholder="아이디를 입력하세요 (3~50자)"
                   style={inputStyle}
                 />
+                {inlineErr("username")}
                 {fieldErr("username")}
               </div>
               <div>
@@ -218,10 +241,11 @@ export default function RegisterPage() {
                   onChange={(e) =>
                     setForm((p) => ({ ...p, email: e.target.value }))
                   }
+                  onBlur={() => touch("email")}
                   placeholder="이메일을 입력하세요"
-                  required
                   style={inputStyle}
                 />
+                {inlineErr("email")}
                 {fieldErr("email")}
               </div>
               <div>
@@ -233,10 +257,11 @@ export default function RegisterPage() {
                   onChange={(e) =>
                     setForm((p) => ({ ...p, password: e.target.value }))
                   }
+                  onBlur={() => touch("password")}
                   placeholder="8자 이상 입력하세요"
-                  required
                   style={inputStyle}
                 />
+                {inlineErr("password")}
                 {fieldErr("password")}
               </div>
               <div>
@@ -267,17 +292,18 @@ export default function RegisterPage() {
               )}
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || !isFormValid}
                 style={{
                   width: "100%",
                   padding: "10px",
-                  backgroundColor: isLoading ? "#666" : "#fff",
-                  color: "#1a1a1a",
+                  backgroundColor:
+                    isLoading || !isFormValid ? "#505050" : "#fff",
+                  color: isLoading || !isFormValid ? "#8e8ea0" : "#1a1a1a",
                   border: "none",
                   borderRadius: "8px",
                   fontSize: "0.875rem",
                   fontWeight: 600,
-                  cursor: isLoading ? "not-allowed" : "pointer",
+                  cursor: isLoading || !isFormValid ? "not-allowed" : "pointer",
                   marginTop: "4px",
                 }}
               >
